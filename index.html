@@ -64,6 +64,12 @@ input{
   border:1px solid #ccc;
   margin-top:10px;
 }
+
+.small-text{
+  font-size:14px;
+  margin-top:5px;
+  color:#333;
+}
 </style>
 </head>
 
@@ -128,7 +134,13 @@ input{
   <button class="yes" onclick="checkMissionPassword()">Confirm</button>
 
   <br><br>
-  <p id="missionResult" style="font-weight:bold; font-size:18px;"></p>
+  <p id="missionResult" class="small-text"></p>
+</div>
+
+<!-- Final Lollies Screen -->
+<div id="lolliesScreen" class="screen">
+  <h2>We need your lollies</h2>
+  <p class="small-text">love you till the end 💖</p>
 </div>
 
 <script>
@@ -228,8 +240,8 @@ function submitAnswer(){
 /* Mission password */
 function checkMissionPassword(){
   const password = document.getElementById('missionPassword').value;
-  if(password==="volley"){  // الباسورد اللي اتفقنا عليه
-    document.getElementById('missionResult').innerText="We need your lollies 😌";
+  if(password==="volley"){  // الباسورد
+    showScreen('lolliesScreen');
   }else{
     alert("Wrong password 😅 Try again");
   }
