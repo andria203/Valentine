@@ -109,10 +109,11 @@ input{
   <button onclick="submitAnswer()">Submit</button>
 </div>
 
-<!-- Speciality result -->
+<!-- Speciality / Date Result -->
 <div id="specialityScreen" class="screen">
-  <h2>You are qualified 💝</h2>
+  <h2>Your special date is:</h2>
   <p id="resultText"></p>
+  <p style="font-size:24px;">💖</p>
   <button class="yes" onclick="showScreen('missionScreen')">Next</button>
 </div>
 
@@ -216,8 +217,7 @@ function submitAnswer(){
       loadQuestion();
     }else{
       let finalDate=results.join("/");
-      document.getElementById('resultText').innerText=
-      "You are qualified 💝, your speciality is: "+finalDate;
+      document.getElementById('resultText').innerText=finalDate;
       showScreen('specialityScreen');
     }
   }else{
@@ -228,7 +228,7 @@ function submitAnswer(){
 /* Mission password */
 function checkMissionPassword(){
   const password = document.getElementById('missionPassword').value;
-  if(password==="Volley"){ 
+  if(password==="volley"){  // الباسورد اللي اتفقنا عليه
     document.getElementById('missionResult').innerText="We need your lollies 😌";
   }else{
     alert("Wrong password 😅 Try again");
