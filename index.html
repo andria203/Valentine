@@ -16,14 +16,8 @@ body{
   text-align:center;
 }
 
-.screen{
-  display:none;
-  padding:30px;
-}
-
-.active{
-  display:block;
-}
+.screen{display:none;padding:20px;}
+.active{display:block;}
 
 button{
   padding:10px 20px;
@@ -34,15 +28,8 @@ button{
   border-radius:8px;
 }
 
-.yes{
-  background:#ff66b2;
-  color:white;
-}
-
-.no{
-  background:white;
-  position:relative;
-}
+.yes{background:#ff66b2;color:white;}
+.no{background:white;position:relative;}
 
 .board{
   display:grid;
@@ -60,11 +47,14 @@ button{
   justify-content:center;
   align-items:center;
   border-radius:5px;
+  font-size:14px;
 }
 
-.player{
-  background:#ff66b2;
-  color:white;
+.player{background:#ff66b2;color:white;}
+
+.dice{
+  font-size:50px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -82,40 +72,39 @@ button{
 <!-- Screen 2 -->
 <div id="screen2" class="screen">
   <h2>We have a challenge for you 😈</h2>
-  <p>You must win this game to reach your stuff</p>
+  <p>Win the game to continue</p>
   <button class="yes" onclick="startGame()">Start</button>
   <button class="no" onmouseover="moveNo(this)">No</button>
 </div>
 
-<!-- Game Screen -->
+<!-- Game -->
 <div id="gameScreen" class="screen">
-  <h3>Reach square 20 to win</h3>
+  <h3>Reach square 25 to win</h3>
   <div class="board" id="board"></div>
-  <button onclick="roll()">Roll Dice</button>
+  <div class="dice" onclick="rollDice()">🎲</div>
 </div>
 
-<!-- Win Screen -->
+<!-- Win -->
 <div id="winScreen" class="screen">
   <h2>You win 🎉</h2>
-  <p>You are not qualified yet to get your stuff</p>
   <p>Ready for the next level?</p>
-  <button class="yes" onclick="showScreen('quizScreen')">Yes</button>
+  <button class="yes" onclick="startQuiz()">Yes</button>
   <button class="no" onmouseover="moveNo(this)">No</button>
 </div>
 
-<!-- Quiz Screen -->
+<!-- Quiz -->
 <div id="quizScreen" class="screen">
-  <h2>Answer correctly to qualify</h2>
-  <p>Question 1: What is my favorite color?</p>
-  <input type="text" id="answer1">
+  <h2>Math Challenge 🧠</h2>
+  <p id="question"></p>
+  <input type="number" id="answer">
   <br><br>
-  <button onclick="checkQuiz()">Submit</button>
+  <button onclick="submitAnswer()">Submit</button>
 </div>
 
-<!-- Final Screen -->
-<div id="qualifiedScreen" class="screen">
-  <h2>You are now qualified and deserve your gift 💝</h2>
-  <p>If you are ready to get it, you need to listen carefully...</p>
+<!-- Final -->
+<div id="finalScreen" class="screen">
+  <h2>You are qualified 💝</h2>
+  <p id="resultText"></p>
 </div>
 
 <script>
@@ -132,36 +121,37 @@ function moveNo(btn){
 }
 
 /* Game Logic */
+
 let position=1;
+let snakes={14:7, 22:10};
+let ladders={3:11, 8:18};
 
 function startGame(){
   showScreen('gameScreen');
   position=1;
-
   const board=document.getElementById('board');
   board.innerHTML="";
-
-  for(let i=1;i<=20;i++){
+  for(let i=1;i<=25;i++){
     let cell=document.createElement('div');
     cell.className='cell';
     cell.id='cell'+i;
     cell.innerText=i;
     board.appendChild(cell);
   }
-
   updatePlayer();
 }
 
-function roll(){
-  let dice=Math.floor(Math.random()*3)+1;
+function rollDice(){
+  let dice=Math.floor(Math.random()*6)+1;
   position+=dice;
 
-  if(position>=20){
-    position=20;
+  if(snakes[position]) position=snakes[position];
+  if(ladders[position]) position=ladders[position];
+
+  if(position>=25){
+    position=25;
     updatePlayer();
-    setTimeout(()=>{
-      showScreen('winScreen');
-    },500);
+    setTimeout(()=>showScreen('winScreen'),500);
     return;
   }
 
@@ -171,17 +161,45 @@ function roll(){
 function updatePlayer(){
   document.querySelectorAll('.cell').forEach(c=>c.classList.remove('player'));
   let current=document.getElementById('cell'+position);
-  if(current){
-    current.classList.add('player');
-  }
+  if(current) current.classList.add('player');
 }
 
-/* Quiz */
-function checkQuiz(){
-  let a1=document.getElementById('answer1').value.toLowerCase();
+/* Quiz Logic */
 
-  if(a1==="pink"){
-    showScreen('qualifiedScreen');
+let questions=[
+  {q:"3 + 4 =", a:7},
+  {q:"2 × 3 =", a:6},
+  {q:"2010 + 9 =", a:2019}
+];
+
+let currentQuestion=0;
+let results=[];
+
+function startQuiz(){
+  showScreen('quizScreen');
+  currentQuestion=0;
+  results=[];
+  loadQuestion();
+}
+
+function loadQuestion(){
+  document.getElementById('question').innerText=questions[currentQuestion].q;
+  document.getElementById('answer').value="";
+}
+
+function submitAnswer(){
+  let userAnswer=parseInt(document.getElementById('answer').value);
+  if(userAnswer===questions[currentQuestion].a){
+    results.push(userAnswer);
+    currentQuestion++;
+    if(currentQuestion<questions.length){
+      loadQuestion();
+    }else{
+      let finalDate=results.join("/");
+      document.getElementById('resultText').innerText=
+      "Your special date is: "+finalDate+" 💖";
+      showScreen('finalScreen');
+    }
   }else{
     alert("Wrong answer 😅 Try again");
   }
