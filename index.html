@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Valentine Surprise</title>
+
 <style>
 body{
   margin:0;
@@ -14,13 +15,16 @@ body{
   height:100vh;
   text-align:center;
 }
+
 .screen{
   display:none;
   padding:30px;
 }
+
 .active{
   display:block;
 }
+
 button{
   padding:10px 20px;
   margin:10px;
@@ -29,14 +33,17 @@ button{
   border:none;
   border-radius:8px;
 }
+
 .yes{
   background:#ff66b2;
   color:white;
 }
+
 .no{
   background:white;
   position:relative;
 }
+
 .board{
   display:grid;
   grid-template-columns:repeat(5,60px);
@@ -44,6 +51,7 @@ button{
   justify-content:center;
   margin:20px 0;
 }
+
 .cell{
   width:60px;
   height:60px;
@@ -53,21 +61,25 @@ button{
   align-items:center;
   border-radius:5px;
 }
+
 .player{
   background:#ff66b2;
   color:white;
 }
 </style>
 </head>
+
 <body>
 
+<!-- Screen 1 -->
 <div id="screen1" class="screen active">
   <h2>Happy Valentine's Day Sweetie 💖</h2>
   <p>To get your stuff press here</p>
-  <button class="yes" onclick="next(2)">Yes</button>
+  <button class="yes" onclick="showScreen('screen2')">Yes</button>
   <button class="no" onmouseover="moveNo(this)">No</button>
 </div>
 
+<!-- Screen 2 -->
 <div id="screen2" class="screen">
   <h2>We have a challenge for you 😈</h2>
   <p>You must win this game to reach your stuff</p>
@@ -75,20 +87,23 @@ button{
   <button class="no" onmouseover="moveNo(this)">No</button>
 </div>
 
+<!-- Game Screen -->
 <div id="gameScreen" class="screen">
   <h3>Reach square 20 to win</h3>
   <div class="board" id="board"></div>
   <button onclick="roll()">Roll Dice</button>
 </div>
 
+<!-- Win Screen -->
 <div id="winScreen" class="screen">
   <h2>You win 🎉</h2>
   <p>You are not qualified yet to get your stuff</p>
   <p>Ready for the next level?</p>
-  <button class="yes" onclick="next(5)">Yes</button>
+  <button class="yes" onclick="showScreen('quizScreen')">Yes</button>
   <button class="no" onmouseover="moveNo(this)">No</button>
 </div>
 
+<!-- Quiz Screen -->
 <div id="quizScreen" class="screen">
   <h2>Answer correctly to qualify</h2>
   <p>Question 1: What is my favorite color?</p>
@@ -97,18 +112,17 @@ button{
   <button onclick="checkQuiz()">Submit</button>
 </div>
 
+<!-- Final Screen -->
 <div id="qualifiedScreen" class="screen">
   <h2>You are now qualified and deserve your gift 💝</h2>
   <p>If you are ready to get it, you need to listen carefully...</p>
 </div>
 
 <script>
-function next(num){
+
+function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen'+num)?.classList.add('active');
-  if(num==5){
-    document.getElementById('quizScreen').classList.add('active');
-  }
+  document.getElementById(id).classList.add('active');
 }
 
 function moveNo(btn){
@@ -117,11 +131,16 @@ function moveNo(btn){
   btn.style.left=Math.random()*80+"%";
 }
 
+/* Game Logic */
 let position=1;
+
 function startGame(){
-  next('gameScreen');
+  showScreen('gameScreen');
+  position=1;
+
   const board=document.getElementById('board');
   board.innerHTML="";
+
   for(let i=1;i<=20;i++){
     let cell=document.createElement('div');
     cell.className='cell';
@@ -129,34 +148,45 @@ function startGame(){
     cell.innerText=i;
     board.appendChild(cell);
   }
+
   updatePlayer();
 }
 
 function roll(){
   let dice=Math.floor(Math.random()*3)+1;
   position+=dice;
+
   if(position>=20){
     position=20;
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById('winScreen').classList.add('active');
+    updatePlayer();
+    setTimeout(()=>{
+      showScreen('winScreen');
+    },500);
+    return;
   }
+
   updatePlayer();
 }
 
 function updatePlayer(){
   document.querySelectorAll('.cell').forEach(c=>c.classList.remove('player'));
-  document.getElementById('cell'+position)?.classList.add('player');
+  let current=document.getElementById('cell'+position);
+  if(current){
+    current.classList.add('player');
+  }
 }
 
+/* Quiz */
 function checkQuiz(){
   let a1=document.getElementById('answer1').value.toLowerCase();
+
   if(a1==="pink"){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById('qualifiedScreen').classList.add('active');
+    showScreen('qualifiedScreen');
   }else{
     alert("Wrong answer 😅 Try again");
   }
 }
+
 </script>
 
 </body>
